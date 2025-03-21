@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 
@@ -13,16 +14,34 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
 
   void _login() {
-    if (usernameController.text == passwordController.text && usernameController.text.isNotEmpty) {
+    if (usernameController.text.isNotEmpty) {
+      String password = passwordController.text.isNotEmpty
+          ? passwordController.text
+          : _generateRandomPassword(8); // Jika kosong, pakai random password
+
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => HomePage(username: usernameController.text)),
+        MaterialPageRoute(
+          builder: (context) => HomePage(
+            username: usernameController.text,
+            password: password, // Kirim password ke HomePage
+          ),
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Username atau password salah!")),
+        const SnackBar(content: Text("Username tidak boleh kosong!")),
       );
     }
+  }
+
+  // Fungsi untuk generate password random
+  String _generateRandomPassword(int length) {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    Random rnd = Random();
+    return String.fromCharCodes(
+      List.generate(length, (index) => chars.codeUnitAt(rnd.nextInt(chars.length))),
+    );
   }
 
   @override
@@ -70,18 +89,18 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 15),
                       TextField(
                         controller: passwordController,
+                        obscureText: true,
                         decoration: InputDecoration(
                           labelText: "Password",
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                         ),
-                        obscureText: true,
                       ),
                       const SizedBox(height: 20),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 0, 36, 155),
+                            backgroundColor: const Color.fromARGB(255, 0, 36, 155),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                             padding: const EdgeInsets.symmetric(vertical: 15),
                           ),
