@@ -49,32 +49,65 @@ class HomePage extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    const SizedBox(width: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Nasabah",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(username, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 5),
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.blue[100],
-                            borderRadius: BorderRadius.circular(5),
+                    const SizedBox(width: 10),
+
+                    // Kotak Informasi Nasabah & Saldo
+                    Expanded(
+                      child: Column(
+                        children: [
+                          // Kotak Nasabah
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.purple[100],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Nasabah",
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  username,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            ),
                           ),
-                          child: const Text(
-                            "Total Saldo Anda:\nRp 1.200.000",
-                            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                          const SizedBox(height: 8),
+
+                          // Kotak Saldo
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.purple[100],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Total Saldo Anda",
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  "Rp. 1.200.000",
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    )
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
+
               const SizedBox(height: 20),
 
               // Grid Menu Utama
