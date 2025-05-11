@@ -18,7 +18,7 @@ class HomeCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 60, color: Color.fromARGB(255, 12, 69, 255)),
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
         ],
       ),

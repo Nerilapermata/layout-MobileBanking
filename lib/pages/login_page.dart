@@ -1,5 +1,5 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,34 +13,98 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void _login() {
-    if (usernameController.text.isNotEmpty) {
-      String password = passwordController.text.isNotEmpty
-          ? passwordController.text
-          : _generateRandomPassword(8); // Jika kosong, pakai random password
+  @override
+  void initState() {
+    super.initState();
+    _initializePassword();
+  }
 
-      Navigator.push(
+  Future<void> _initializePassword() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('password')) {
+      await prefs.setString('password', 'nerila08');
+    }
+  }
+
+  Future<void> _login() async {
+    String username = usernameController.text.trim();
+    String password = passwordController.text.trim();
+
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Username dan password tidak boleh kosong!")),
+      );
+      return;
+    }
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String savedPassword = prefs.getString('password') ?? 'nerila08';
+
+    if (username == "Nerila Permata Aly" && password == savedPassword) {
+      await prefs.setBool('isLoggedIn', true);
+      await prefs.setString('username', username);
+
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => HomePage(
-            username: usernameController.text,
-            password: password, // Kirim password ke HomePage
+            username: username,
+            password: password,
           ),
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Username tidak boleh kosong!")),
+        const SnackBar(content: Text("Username atau password salah!")),
       );
     }
   }
 
-  // Fungsi untuk generate password random
-  String _generateRandomPassword(int length) {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    Random rnd = Random();
-    return String.fromCharCodes(
-      List.generate(length, (index) => chars.codeUnitAt(rnd.nextInt(chars.length))),
+  void _showForgotPasswordDialog() {
+    final TextEditingController newPasswordController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Ganti Password"),
+          content: TextField(
+            controller: newPasswordController,
+            obscureText: true,
+            decoration: const InputDecoration(
+              labelText: "Password Baru",
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Batal"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                String newPassword = newPasswordController.text.trim();
+                if (newPassword.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Password baru tidak boleh kosong!")),
+                  );
+                  return;
+                }
+
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.setString('password', newPassword);
+
+                Navigator.of(context).pop();
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Password berhasil diubah!")),
+                );
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -69,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: Colors.black26,
                         blurRadius: 10,
@@ -112,8 +176,14 @@ class _LoginPageState extends State<LoginPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          TextButton(onPressed: () {}, child: const Text("Daftar Mbanking", style: TextStyle(color: Color.fromARGB(255, 0, 36, 155)))),
-                          TextButton(onPressed: () {}, child: const Text("Lupa Password?", style: TextStyle(color: Color.fromARGB(255, 0, 36, 155)))),
+                          TextButton(
+                            onPressed: () {}, 
+                            child: const Text("Daftar Mbanking", style: TextStyle(color: Color.fromARGB(255, 0, 36, 155))),
+                          ),
+                          TextButton(
+                            onPressed: _showForgotPasswordDialog,
+                            child: const Text("Lupa Password?", style: TextStyle(color: Color.fromARGB(255, 0, 36, 155))),
+                          ),
                         ],
                       ),
                     ],
